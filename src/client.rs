@@ -36,9 +36,9 @@ use crate::googleapis::{
 use crate::Error;
 use crate::RowsStreamReader;
 
-static API_ENDPOINT: &'static str = "https://bigquerystorage.googleapis.com";
-static API_DOMAIN: &'static str = "bigquerystorage.googleapis.com";
-static API_SCOPE: &'static str = "https://www.googleapis.com/auth/bigquery";
+static API_ENDPOINT: &str = "https://bigquerystorage.googleapis.com";
+static API_DOMAIN: &str = "bigquerystorage.googleapis.com";
+static API_SCOPE: &str = "https://www.googleapis.com/auth/bigquery";
 
 /// A fully qualified BigQuery table. This requires a `project_id`, a `dataset_id`
 /// and a `table_id`. Only alphanumerical and underscores are allowed for `dataset_id`
@@ -308,8 +308,8 @@ mod tests {
         let mut num_rows = 0;
 
         while let Some(stream_reader) = read_session.next_stream().await.unwrap() {
-            let mut arrow_stream_reader = stream_reader.into_arrow_reader().await.unwrap();
-            while let Some(record_batch) = arrow_stream_reader.next() {
+            let arrow_stream_reader = stream_reader.into_arrow_reader().await.unwrap();
+            for record_batch in arrow_stream_reader {
                 num_rows += record_batch.unwrap().num_rows();
             }
         }
